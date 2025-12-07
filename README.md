@@ -7,15 +7,13 @@ A secure password management system built in C++17 with REST API, custom data st
 ## 🔑 Features
 
 ### Security
-- **AES-256-CBC** encryption for password storage
-- **PBKDF2-HMAC-SHA256** password hashing with 100,000 iterations
+- **AES-256** encryption for password storage
 - Unique salt per user (32 bytes)
 - Unique IV per password entry (16 bytes)
 - Session-based authentication with Bearer tokens
-- 24-hour session expiration
 
 ### Data Structures
-- **Custom Hash Table** - Built from scratch with separate chaining for collision resolution
+- **Custom Hash Table**
 - **Disk-based B-Tree** - Efficient password indexing with 4KB nodes
 
 ### REST API
@@ -37,9 +35,7 @@ A secure password management system built in C++17 with REST API, custom data st
 | Language | C++17 |
 | Build System | CMake 3.15+ |
 | HTTP Server | cpp-httplib (header-only) |
-| JSON Parser | nlohmann-json (header-only) |
-| Cryptography | OpenSSL |
-| Data Storage | Binary files (custom format) |
+| Data Storage | B-Tree and HashTable |
 
 ---
 
@@ -100,7 +96,7 @@ password-vault/
 
 ### Custom Hash Table
 - **Implementation:** Separate chaining with linked lists
-- **Size:** 1009 buckets (prime number)
+- **Size:** 1009
 - **Hash Function:** DJB2 algorithm
 - **Complexity:** O(1) average case for insert/search/delete
 - **Usage:** User lookup (by email, by ID), session management
@@ -151,11 +147,9 @@ Plain Password
 ## 🚀 Getting Started
 
 ### Prerequisites
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
-- CMake 3.15 or higher
+- C++17 compatible compiler
 - OpenSSL library
 - cpp-httplib (header-only, included)
-- nlohmann-json (header-only, included)
 
 ### Installation
 
@@ -269,17 +263,15 @@ Run the included test suite:
 **Estimated Capacity:**
 - Users: ~1 million (200 MB memory)
 - Passwords: Unlimited (disk-limited)
-- Concurrent Requests: ~100 (thread pool)
+- Concurrent Requests: ~100
 
 ---
 
 ## 🔒 Security Notes
 
-- All passwords encrypted with AES-256-CBC
-- Master passwords hashed with PBKDF2 (100k iterations)
-- Sessions expire after 24 hours
+- All passwords encrypted with AES-256
 - No plaintext passwords stored anywhere
-- Each password entry uses unique IV
+- Each password entry uses unique ID
 
 **For Production Use:**
 - Add HTTPS support
@@ -288,22 +280,3 @@ Run the included test suite:
 - Set up proper backup strategy
 - Use environment variables for config
 
----
-
-## 📚 Documentation
-
-- **Architecture Details:** See `docs/ARCHITECTURE.md`
-- **AWS Deployment:** See `docs/AWS_DEPLOYMENT.md`
-- **Implementation Guide:** See `IMPLEMENTATION_ROADMAP.md`
-
----
-
-## 🤝 Contributing
-
-This is an educational project. Contributions welcome!
-
----
-
-## 📄 License
-
-Educational project - for learning purposes.

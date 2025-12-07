@@ -3,34 +3,27 @@
 
 using namespace std;
 
-// SKELETON: Basic main function (5% implementation)
+// basic skeleton
 
 int main() {
-    cout << "Password Vault Backend - Development Version" << endl;
-    cout << "=============================================" << endl;
+    cout << "Password Vault Backend" << endl;
     
-    // TODO: Initialize StorageManager
+    // TODO: make StorageManager
     // StorageManager storage("data/vault.dat", "data/users.dat");
     
-    // TODO: Set up HTTP server using cpp-httplib
-    // httplib::Server server;
+    // TODO: setup httplib server
     
-    // TODO: Implement REST API endpoints:
-    // POST /signup - Register new user
-    // POST /login - User login
-    // POST /logout - User logout
-    // GET /vault - Get all passwords for user
-    // POST /vault - Add new password
-    // PUT /vault/:id - Update password
-    // DELETE /vault/:id - Delete password
-    // GET /health - Health check
+    // TODO: add endpoints:
+    // POST /signup, POST /login, POST /logout
+    // GET /vault, POST /vault
+    // PUT /vault/:id, DELETE /vault/:id
+    // GET /health
     
-    // TODO: Add Bearer token authentication middleware
+    // TODO: check Bearer tokens
     
-    // TODO: Start server on port 8080
+    // TODO: listen on port 8080
     
-    cout << "Server implementation needed!" << endl;
-    cout << "See docs/IMPLEMENTATION_GUIDE.md for details" << endl;
+    cout << "Need to implement server!" << endl;
     
     return 0;
 }

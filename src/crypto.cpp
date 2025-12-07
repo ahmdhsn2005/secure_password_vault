@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// IMPLEMENTED: Utility functions (10% of crypto module)
+// DONE: hex conversion helpers
 
 string Crypto::bytesToHex(const vector<uint8_t>& bytes) {
     stringstream ss;
@@ -29,57 +29,44 @@ vector<uint8_t> Crypto::hexToBytes(const string& hex) {
     return bytes;
 }
 
-// TODO: Implement the remaining functions
+// TODO: rest of the crypto stuff
 
 vector<uint8_t> Crypto::generateRandomBytes(int length) {
-    // TODO: Implement using OpenSSL RAND_bytes
-    // Example code structure:
-    // vector<uint8_t> bytes(length);
-    // if (RAND_bytes(bytes.data(), length) != 1) {
-    //     throw runtime_error("Failed to generate random bytes");
-    // }
-    // return bytes;
-    
+    // TODO: use RAND_bytes
     throw runtime_error("generateRandomBytes not implemented yet!");
 }
 
 string Crypto::generateSalt() {
-    // TODO: Call generateRandomBytes(32) and convert to hex
+    // TODO: generateRandomBytes(32) then bytesToHex
     throw runtime_error("generateSalt not implemented yet!");
 }
 
 string Crypto::generateIV() {
-    // TODO: Call generateRandomBytes(16) and convert to hex
+    // TODO: generateRandomBytes(16) then bytesToHex
     throw runtime_error("generateIV not implemented yet!");
 }
 
 string Crypto::deriveKey(const string& password, const string& salt, int iterations) {
-    // TODO: Implement PBKDF2-HMAC-SHA256
-    // Use OpenSSL's PKCS5_PBKDF2_HMAC function
-    // Return 32-byte key as hex string
+    // TODO: PKCS5_PBKDF2_HMAC with 100k iterations
     throw runtime_error("deriveKey not implemented yet!");
 }
 
 string Crypto::hashPassword(const string& password, const string& salt) {
-    // TODO: Call deriveKey() with password and salt
+    // TODO: just call deriveKey
     throw runtime_error("hashPassword not implemented yet!");
 }
 
 bool Crypto::verifyPassword(const string& password, const string& salt, const string& hash) {
-    // TODO: Hash the input password and compare with stored hash
+    // TODO: hash it and compare strings
     throw runtime_error("verifyPassword not implemented yet!");
 }
 
 string Crypto::encryptAES256(const string& plaintext, const string& key, const string& iv) {
-    // TODO: Implement AES-256-CBC encryption using OpenSSL
-    // Use EVP_EncryptInit_ex, EVP_EncryptUpdate, EVP_EncryptFinal_ex
-    // Return ciphertext as hex string
+    // TODO: EVP_EncryptInit_ex, Update, Final
     throw runtime_error("encryptAES256 not implemented yet!");
 }
 
 string Crypto::decryptAES256(const string& ciphertext, const string& key, const string& iv) {
-    // TODO: Implement AES-256-CBC decryption using OpenSSL
-    // Use EVP_DecryptInit_ex, EVP_DecryptUpdate, EVP_DecryptFinal_ex
-    // Return plaintext
+    // TODO: EVP_DecryptInit_ex, Update, Final
     throw runtime_error("decryptAES256 not implemented yet!");
 }

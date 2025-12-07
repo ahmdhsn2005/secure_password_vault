@@ -6,47 +6,46 @@
 
 using namespace std;
 
-// Crypto Module - Handles all encryption and security operations
-// TODO: Implement using OpenSSL library
+// Crypto stuff - encryption and hashing
+// TODO: Use OpenSSL
 class Crypto {
 public:
-    // Generate random bytes (for salt, IV, etc.)
-    // TODO: Use OpenSSL RAND_bytes()
+    // Make random bytes for salt, IV, etc.
+    // TODO: Use RAND_bytes from OpenSSL
     static vector<uint8_t> generateRandomBytes(int length);
     
-    // Generate a random salt (32 bytes) for password hashing
-    // TODO: Call generateRandomBytes(32) and convert to hex
+    // Make a 32-byte salt
+    // TODO: Just call generateRandomBytes(32)
     static string generateSalt();
     
-    // Generate a random IV (16 bytes for AES-256-CBC)
-    // TODO: Call generateRandomBytes(16) and convert to hex
+    // Make a 16-byte IV for AES
+    // TODO: Call generateRandomBytes(16)
     static string generateIV();
     
-    // Derive encryption key from password using PBKDF2-HMAC-SHA256
-    // TODO: Implement using EVP_PBE_scrypt or PKCS5_PBKDF2_HMAC
-    // Recommended: 100,000 iterations
+    // Turn password into encryption key with PBKDF2
+    // TODO: Use PKCS5_PBKDF2_HMAC, 100k iterations
     static string deriveKey(const string& password, const string& salt, int iterations = 100000);
     
-    // Hash password for storage
-    // TODO: Use deriveKey() function
+    // Hash password for storing
+    // TODO: Just use deriveKey()
     static string hashPassword(const string& password, const string& salt);
     
-    // Verify password against stored hash
-    // TODO: Hash the input password and compare with stored hash
+    // Check if password matches
+    // TODO: Hash it and compare
     static bool verifyPassword(const string& password, const string& salt, const string& hash);
     
-    // Encrypt plaintext using AES-256-CBC
-    // TODO: Use OpenSSL EVP_EncryptInit_ex, EVP_EncryptUpdate, EVP_EncryptFinal_ex
+    // Encrypt with AES-256-CBC
+    // TODO: OpenSSL EVP functions
     static string encryptAES256(const string& plaintext, const string& key, const string& iv);
     
-    // Decrypt ciphertext using AES-256-CBC
-    // TODO: Use OpenSSL EVP_DecryptInit_ex, EVP_DecryptUpdate, EVP_DecryptFinal_ex
+    // Decrypt with AES-256-CBC
+    // TODO: OpenSSL EVP functions
     static string decryptAES256(const string& ciphertext, const string& key, const string& iv);
     
-    // Utility: Convert byte array to hexadecimal string
+    // Helper: bytes to hex string
     static string bytesToHex(const vector<uint8_t>& bytes);
     
-    // Utility: Convert hexadecimal string to byte array
+    // Helper: hex string to bytes
     static vector<uint8_t> hexToBytes(const string& hex);
 };
 

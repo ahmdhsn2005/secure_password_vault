@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// Storage Manager - Facade that coordinates B-Tree and Auth modules
+// Main storage - ties together auth and btree
 class StorageManager {
 private:
     BTree btree;
@@ -17,14 +17,14 @@ private:
 public:
     StorageManager(const string& vault_file, const string& users_file);
     
-    // User operations
+    // user stuff
     uint64_t registerUser(const string& email, const string& password, const string& recovery_phrase);
     string loginUser(const string& email, const string& password);
     bool logoutUser(const string& token);
     uint64_t validateSession(const string& token);
     
-    // Vault operations
-    // TODO: Implement these methods to coordinate between auth and btree
+    // vault stuff
+    // TODO: encrypt passwords and save to btree
     uint64_t addVaultEntry(uint64_t user_id, const string& site_name, 
                           const string& username, const string& password,
                           const string& notes, const string& category);

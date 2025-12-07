@@ -7,27 +7,27 @@
 
 using namespace std;
 
-// Vault Record - Represents a single password entry
+// One password entry
 struct VaultRecord {
     uint64_t record_id;
     uint64_t user_id;
-    string site_name;           // The key we'll index by
+    string site_name;           // what we search by
     string username;
-    string encrypted_password;  // AES-256 encrypted
-    string iv;                  // Initialization vector for decryption
+    string encrypted_password;  // encrypted with AES-256
+    string iv;                  // for decryption
     string notes;
     string category;
     uint64_t created_at;
     uint64_t modified_at;
 };
 
-// B-Tree Node - Fixed size for disk storage
+// B-Tree node (4KB on disk)
 struct BTreeNode {
     bool is_leaf;
     int num_keys;
-    string keys[40];            // Max 40 keys (site names)
-    uint64_t children[41];      // Max 41 children
-    uint64_t record_ids[40];    // Record IDs for leaf nodes
+    string keys[40];            // up to 40 site names
+    uint64_t children[41];      // up to 41 child nodes
+    uint64_t record_ids[40];    // points to records
     uint64_t node_id;
     
     BTreeNode() : is_leaf(true), num_keys(0), node_id(0) {
@@ -36,8 +36,8 @@ struct BTreeNode {
     }
 };
 
-// B-Tree - Disk-based indexing structure
-// TODO: Implement insert, search, delete operations
+// B-Tree for storing passwords on disk
+// TODO: need to write insert, search, delete
 class BTree {
 private:
     string filename;
@@ -45,31 +45,26 @@ private:
     uint64_t next_node_id;
     uint64_t next_record_id;
     
-    // TODO: Implement helper methods
-    // - readNode(uint64_t node_id) -> BTreeNode
-    // - writeNode(BTreeNode node)
-    // - readRecord(uint64_t record_id) -> VaultRecord
-    // - writeRecord(VaultRecord record)
-    // - searchNode(BTreeNode node, string key) -> vector<VaultRecord>
-    // - insertNonFull(BTreeNode node, VaultRecord record)
-    // - splitChild(BTreeNode parent, int index)
+    // TODO: write these helpers
+    // readNode, writeNode, readRecord, writeRecord
+    // searchNode, insertNonFull, splitChild
     
 public:
     BTree(const string& filename);
     
-    // TODO: Insert a new vault entry
+    // TODO: add new password
     bool insert(const VaultRecord& record);
     
-    // TODO: Search for entries by site name
+    // TODO: find passwords by site name
     vector<VaultRecord> search(const string& site_name);
     
-    // TODO: Get all entries for a specific user
+    // TODO: get all passwords for one user
     vector<VaultRecord> getAllRecordsForUser(uint64_t user_id);
     
-    // TODO: Update an existing entry
+    // TODO: update a password
     bool update(uint64_t record_id, const VaultRecord& record);
     
-    // TODO: Delete an entry
+    // TODO: delete a password
     bool remove(uint64_t record_id);
 };
 

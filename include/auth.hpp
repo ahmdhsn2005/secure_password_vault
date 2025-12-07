@@ -7,14 +7,14 @@
 
 using namespace std;
 
-// Custom Hash Table Implementation - Built from scratch!
-// TODO: Implement hash table with separate chaining
+// Hash table built from scratch (no STL!)
+// TODO: separate chaining for collisions
 template<typename K, typename V>
 class HashMap {
 private:
-    static const int TABLE_SIZE = 1009;  // Prime number for better distribution
+    static const int TABLE_SIZE = 1009;  // prime number
     
-    // Node for separate chaining
+    // linked list node
     struct HashNode {
         K key;
         V value;
@@ -25,8 +25,8 @@ private:
     
     HashNode* table[TABLE_SIZE];
     
-    // DJB2 hash function
-    // TODO: Implement: hash = ((hash << 5) + hash) + c for each char
+    // DJB2 hash
+    // TODO: hash = ((hash << 5) + hash) + c
     int hashFunction(const string& key) const;
     
 public:
@@ -37,85 +37,76 @@ public:
     }
     
     ~HashMap() {
-        // TODO: Free all nodes
+        // TODO: free the linked lists
     }
     
-    // TODO: Insert key-value pair
+    // TODO: add key-value
     void put(const K& key, const V& value);
     
-    // TODO: Get value by key (return nullptr if not found)
+    // TODO: get value (nullptr if not found)
     V* get(const K& key);
     
-    // TODO: Check if key exists
+    // TODO: check if exists
     bool contains(const K& key) const;
     
-    // TODO: Remove key-value pair
+    // TODO: delete key
     bool remove(const K& key);
     
-    // TODO: Get all values (for iteration)
+    // TODO: get all values
     vector<V> getAllValues() const;
 };
 
-// User structure
+// User info
 struct User {
     uint64_t user_id;
     string email;
-    string password_hash;       // PBKDF2 hash
-    string salt;                // Random salt
+    string password_hash;       // hashed with PBKDF2
+    string salt;                // random per user
     string recovery_phrase;
-    string encryption_key;      // For encrypting vault entries
+    string encryption_key;      // for their vault
     uint64_t created_at;
 };
 
-// Session structure
+// Login session
 struct Session {
     string token;
     uint64_t user_id;
     uint64_t created_at;
-    uint64_t expires_at;        // 24 hours from creation
+    uint64_t expires_at;        // 24 hours
 };
 
-// Authentication Manager
-// TODO: Implement user registration, login, and session management
+// Handles users and sessions
+// TODO: registration, login, sessions
 class AuthManager {
 private:
-    HashMap<string, User> users_by_email;   // email -> User
-    HashMap<uint64_t, User> users_by_id;    // user_id -> User
-    HashMap<string, Session> sessions;       // token -> Session
+    HashMap<string, User> users_by_email;   // lookup by email
+    HashMap<uint64_t, User> users_by_id;    // lookup by ID
+    HashMap<string, Session> sessions;       // lookup by token
     uint64_t next_user_id;
     string users_file;
     
-    // TODO: Implement helper methods
-    // - loadUsers() - Load from users.dat file
-    // - saveUsers() - Save to users.dat file
+    // TODO: file I/O
+    // loadUsers, saveUsers
     
 public:
     AuthManager(const string& users_file);
     
-    // TODO: Register a new user
-    // - Generate salt
-    // - Hash password with PBKDF2
-    // - Generate encryption key
-    // - Save to hash table and file
+    // TODO: sign up new user
+    // make salt, hash password, save
     uint64_t registerUser(const string& email, const string& password, const string& recovery_phrase);
     
-    // TODO: Login user
-    // - Find user by email
-    // - Verify password
-    // - Generate session token
-    // - Store session with 24-hour expiration
+    // TODO: log in
+    // check password, make session token
     string login(const string& email, const string& password);
     
-    // TODO: Logout user (invalidate session)
+    // TODO: log out
     bool logout(const string& token);
     
-    // TODO: Validate session token
-    // - Check if token exists
-    // - Check if not expired
-    // - Return user_id
+    // TODO: check if token is valid
+    // return user_id or 0
     uint64_t validateSession(const string& token);
     
-    // Helper methods
+    // helpers
     User* getUserByEmail(const string& email);
     User* getUserById(uint64_t user_id);
 };

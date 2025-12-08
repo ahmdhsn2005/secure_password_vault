@@ -37,7 +37,6 @@ struct BTreeNode {
 };
 
 // B-Tree for storing passwords on disk
-// TODO: need to write insert, search, delete
 class BTree {
 private:
     string filename;
@@ -45,26 +44,33 @@ private:
     uint64_t next_node_id;
     uint64_t next_record_id;
     
-    // TODO: write these helpers
-    // readNode, writeNode, readRecord, writeRecord
-    // searchNode, insertNonFull, splitChild
+    // Helper functions for disk I/O
+    void saveMetadata();
+    BTreeNode readNode(uint64_t node_id);
+    void writeNode(const BTreeNode& node);
+    void writeRecord(const VaultRecord& record);
+    vector<VaultRecord> readAllRecords();
+    
+    // B-Tree operations
+    void splitChild(BTreeNode& parent, int index);
+    void insertNonFull(BTreeNode& node, const VaultRecord& record);
     
 public:
     BTree(const string& filename);
     
-    // TODO: add new password
+    // Add new password
     bool insert(const VaultRecord& record);
     
-    // TODO: find passwords by site name
+    // Find passwords by site name
     vector<VaultRecord> search(const string& site_name);
     
-    // TODO: get all passwords for one user
+    // Get all passwords for one user
     vector<VaultRecord> getAllRecordsForUser(uint64_t user_id);
     
-    // TODO: update a password
+    // Update a password
     bool update(uint64_t record_id, const VaultRecord& record);
     
-    // TODO: delete a password
+    // Delete a password
     bool remove(uint64_t record_id);
 };
 

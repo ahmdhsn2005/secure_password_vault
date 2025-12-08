@@ -10,12 +10,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/third_party)
 
-# Find OpenSSL package
-find_package(OpenSSL REQUIRED)
-if(OPENSSL_FOUND)
-    message(STATUS "OpenSSL found: ${OPENSSL_VERSION}")
-    include_directories(${OPENSSL_INCLUDE_DIR})
-endif()
+# OpenSSL Configuration
+set(OPENSSL_ROOT "C:/Program Files/OpenSSL-Win64")
+include_directories("${OPENSSL_ROOT}/include")
+link_directories("${OPENSSL_ROOT}/lib/VC/x64/MD")
 
 # Find threading library
 find_package(Threads REQUIRED)
@@ -42,14 +40,31 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    OpenSSL::SSL
-    OpenSSL::Crypto
+    libssl libcrypto
     Threads::Threads
+    ws2_32 crypt32
+)
+
+# Test executable
+set(TEST_SOURCES
+    test_data_structures.cpp
+    src/crypto.cpp
+    src/btree.cpp
+    src/auth.cpp
+    src/storage.cpp
+)
+
+add_executable(TestDataStructures ${TEST_SOURCES} ${HEADERS})
+
+target_link_libraries(TestDataStructures
+    libssl libcrypto
+    Threads::Threads
+    ws2_32 crypt32
 )
 
 # Platform-specific settings
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} ws2_32)
+    target_link_libraries(${PROJECT_NAME} ws2_32 crypt32)
 endif()
 
 # Compiler warnings

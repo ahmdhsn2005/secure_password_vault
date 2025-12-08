@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <type_traits>
 
 using namespace std;
 
@@ -25,9 +26,22 @@ private:
     
     HashNode* table[TABLE_SIZE];
     
-    // DJB2 hash
-    // TODO: hash = ((hash << 5) + hash) + c
-    int hashFunction(const string& key) const;
+    // DJB2 hash function - converts key to integer hash
+    int hashFunction(const K& key) const {
+        // For string keys
+        if constexpr (is_same_v<K, string>) {
+            unsigned long hash = 5381;
+            for (char c : key) {
+                hash = ((hash << 5) + hash) + c;  // hash * 33 + c
+            }
+            return hash % TABLE_SIZE;
+        }
+        // For uint64_t keys
+        else if constexpr (is_same_v<K, uint64_t>) {
+            return key % TABLE_SIZE;
+        }
+        return 0;
+    }
     
 public:
     HashMap() {
@@ -37,23 +51,101 @@ public:
     }
     
     ~HashMap() {
-        // TODO: free the linked lists
+        // Free all linked lists in each bucket
+        for(int i = 0; i < TABLE_SIZE; i++) {
+            HashNode* current = table[i];
+            while(current != nullptr) {
+                HashNode* temp = current;
+                current = current->next;
+                delete temp;
+            }
+        }
     }
     
-    // TODO: add key-value
-    void put(const K& key, const V& value);
+    // Insert or update key-value pair
+    void put(const K& key, const V& value) {
+        int index = hashFunction(key);
+        HashNode* current = table[index];
+        
+        // Check if key already exists - update it
+        while(current != nullptr) {
+            if(current->key == key) {
+                current->value = value;
+                return;
+            }
+            current = current->next;
+        }
+        
+        // Key doesn't exist - insert at head of chain
+        HashNode* newNode = new HashNode(key, value);
+        newNode->next = table[index];
+        table[index] = newNode;
+    }
     
-    // TODO: get value (nullptr if not found)
-    V* get(const K& key);
+    // Get value by key (returns nullptr if not found)
+    V* get(const K& key) {
+        int index = hashFunction(key);
+        HashNode* current = table[index];
+        
+        while(current != nullptr) {
+            if(current->key == key) {
+                return &(current->value);
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
     
-    // TODO: check if exists
-    bool contains(const K& key) const;
+    // Check if key exists
+    bool contains(const K& key) const {
+        int index = hashFunction(key);
+        HashNode* current = table[index];
+        
+        while(current != nullptr) {
+            if(current->key == key) {
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
     
-    // TODO: delete key
-    bool remove(const K& key);
+    // Remove key-value pair
+    bool remove(const K& key) {
+        int index = hashFunction(key);
+        HashNode* current = table[index];
+        HashNode* prev = nullptr;
+        
+        while(current != nullptr) {
+            if(current->key == key) {
+                if(prev == nullptr) {
+                    // Removing head of chain
+                    table[index] = current->next;
+                } else {
+                    // Removing middle/end of chain
+                    prev->next = current->next;
+                }
+                delete current;
+                return true;
+            }
+            prev = current;
+            current = current->next;
+        }
+        return false;
+    }
     
-    // TODO: get all values
-    vector<V> getAllValues() const;
+    // Get all values from the hash table
+    vector<V> getAllValues() const {
+        vector<V> values;
+        for(int i = 0; i < TABLE_SIZE; i++) {
+            HashNode* current = table[i];
+            while(current != nullptr) {
+                values.push_back(current->value);
+                current = current->next;
+            }
+        }
+        return values;
+    }
 };
 
 // User info
@@ -76,7 +168,6 @@ struct Session {
 };
 
 // Handles users and sessions
-// TODO: registration, login, sessions
 class AuthManager {
 private:
     HashMap<string, User> users_by_email;   // lookup by email
@@ -85,8 +176,9 @@ private:
     uint64_t next_user_id;
     string users_file;
     
-    // TODO: file I/O
-    // loadUsers, saveUsers
+    // File I/O functions
+    void loadUsers();
+    void saveUsers();
     
 public:
     AuthManager(const string& users_file);

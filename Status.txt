@@ -1,0 +1,49 @@
+========================================================
+    SECURE PASSWORD VAULT - IMPLEMENTATION STATUS
+========================================================
+
+WHAT HAS BEEN IMPLEMENTED:
+
+1. HashMap (include/auth.hpp)
+   - Fast lookup for storing users and session tokens in memory
+   - Handles collisions using separate chaining
+
+2. Crypto Module (src/crypto.cpp)
+   - AES-256 encryption to protect passwords
+   - PBKDF2 password hashing with salt
+   - Random generation for salts and IVs
+
+3. AuthManager (src/auth.cpp)
+   - User registration and login
+   - Session management with tokens
+   - File persistence for user data
+
+4. B-Tree (src/btree.cpp)
+   - Disk-based storage for password vault entries
+   - Efficient search by site name and user ID
+
+5. StorageManager (src/storage.cpp)
+   - Integration of all modules
+   - Add/retrieve/update/delete password entries
+   - Multi-user data isolation
+
+HOW TO RUN/TEST:
+
+Step 1: Open PowerShell in project folder
+
+Step 2: Build the project
+   cd build
+   cmake --build . --target TestDataStructures
+
+Step 3: Run the tests
+   .\TestDataStructures.exe
+
+EXPECTED RESULT:
+   All 41 tests should pass, showing:
+   - HashMap operations working
+   - Encryption/decryption working
+   - User authentication working
+   - Password storage working
+   - Multi-user isolation working
+
+========================================================

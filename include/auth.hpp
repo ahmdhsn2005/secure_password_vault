@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <type_traits>
 
 using namespace std;
 
@@ -28,19 +27,21 @@ private:
     
     // DJB2 hash function - converts key to integer hash
     int hashFunction(const K& key) const {
-        // For string keys
-        if constexpr (is_same_v<K, string>) {
-            unsigned long hash = 5381;
-            for (char c : key) {
-                hash = ((hash << 5) + hash) + c;  // hash * 33 + c
-            }
-            return hash % TABLE_SIZE;
+        return hashHelper(key);
+    }
+    
+    // Helper function for string keys
+    int hashHelper(const string& key) const {
+        unsigned long hash = 5381;
+        for (char c : key) {
+            hash = ((hash << 5) + hash) + c;  // hash * 33 + c
         }
-        // For uint64_t keys
-        else if constexpr (is_same_v<K, uint64_t>) {
-            return key % TABLE_SIZE;
-        }
-        return 0;
+        return hash % TABLE_SIZE;
+    }
+    
+    // Helper function for uint64_t keys
+    int hashHelper(uint64_t key) const {
+        return key % TABLE_SIZE;
     }
     
 public:

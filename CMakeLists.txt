@@ -10,10 +10,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/third_party)
 
-# OpenSSL Configuration
-set(OPENSSL_ROOT "C:/Program Files/OpenSSL-Win64")
-include_directories("${OPENSSL_ROOT}/include")
-link_directories("${OPENSSL_ROOT}/lib/VC/x64/MD")
+# Detect platform
+if(WIN32)
+    # OpenSSL Configuration for Windows
+    set(OPENSSL_ROOT "C:/Program Files/OpenSSL-Win64")
+    include_directories("${OPENSSL_ROOT}/include")
+    link_directories("${OPENSSL_ROOT}/lib/VC/x64/MD")
+    set(OPENSSL_LIBS libssl libcrypto)
+    set(PLATFORM_LIBS ws2_32 crypt32)
+else()
+    # OpenSSL Configuration for Linux
+    find_package(OpenSSL REQUIRED)
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    set(OPENSSL_LIBS OpenSSL::SSL OpenSSL::Crypto)
+    set(PLATFORM_LIBS pthread)
+endif()
 
 # Find threading library
 find_package(Threads REQUIRED)
@@ -40,9 +51,9 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    libssl libcrypto
+    ${OPENSSL_LIBS}
     Threads::Threads
-    ws2_32 crypt32
+    ${PLATFORM_LIBS}
 )
 
 # Test executable
@@ -57,9 +68,43 @@ set(TEST_SOURCES
 add_executable(TestDataStructures ${TEST_SOURCES} ${HEADERS})
 
 target_link_libraries(TestDataStructures
-    libssl libcrypto
+    ${OPENSSL_LIBS}
     Threads::Threads
-    ws2_32 crypt32
+    ${PLATFORM_LIBS}
+)
+
+# Interactive test executable
+set(INTERACTIVE_SOURCES
+    interactive_test.cpp
+    src/crypto.cpp
+    src/btree.cpp
+    src/auth.cpp
+    src/storage.cpp
+)
+
+add_executable(InteractiveTest ${INTERACTIVE_SOURCES} ${HEADERS})
+
+target_link_libraries(InteractiveTest
+    ${OPENSSL_LIBS}
+    Threads::Threads
+    ${PLATFORM_LIBS}
+)
+
+# Server executable
+set(SERVER_SOURCES
+    src/server.cpp
+    src/crypto.cpp
+    src/btree.cpp
+    src/auth.cpp
+    src/storage.cpp
+)
+
+add_executable(password_vault_server ${SERVER_SOURCES} ${HEADERS})
+
+target_link_libraries(password_vault_server
+    ${OPENSSL_LIBS}
+    Threads::Threads
+    ${PLATFORM_LIBS}
 )
 
 # Platform-specific settings

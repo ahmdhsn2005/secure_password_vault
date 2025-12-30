@@ -1,3 +1,5 @@
+// Disable memory-mapped files in httplib for MinGW compatibility
+#define CPPHTTPLIB_NO_EXCEPTIONS
 #include <httplib.h>
 #include <json.hpp>
 #include "storage.hpp"
@@ -158,7 +160,7 @@ int main() {
                 pwd_obj["id"] = std::to_string(pwd.record_id);
                 pwd_obj["site"] = pwd.site_name;
                 pwd_obj["username"] = pwd.username;
-                pwd_obj["password"] = pwd.password;
+                pwd_obj["password"] = pwd.encrypted_password;
                 pwd_obj["category"] = pwd.category;
                 pwd_obj["notes"] = pwd.notes;
                 pwd_array.push_back(pwd_obj);

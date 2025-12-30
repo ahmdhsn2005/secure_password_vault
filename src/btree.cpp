@@ -10,7 +10,6 @@ using namespace std;
 BTree::BTree(const string& filename) : filename(filename), root_id(0), next_node_id(1), next_record_id(1) {
     ifstream file(filename, ios::binary);
     if(file.is_open()) {
-        // Load metadata
         file.read(reinterpret_cast<char*>(&root_id), sizeof(root_id));
         file.read(reinterpret_cast<char*>(&next_node_id), sizeof(next_node_id));
         file.read(reinterpret_cast<char*>(&next_record_id), sizeof(next_record_id));

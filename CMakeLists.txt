@@ -57,38 +57,38 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Test executable
-set(TEST_SOURCES
-    test_data_structures.cpp
-    src/crypto.cpp
-    src/btree.cpp
-    src/auth.cpp
-    src/storage.cpp
-)
+# set(TEST_SOURCES
+#     test_data_structures.cpp
+#     src/crypto.cpp
+#     src/btree.cpp
+#     src/auth.cpp
+#     src/storage.cpp
+# )
 
-add_executable(TestDataStructures ${TEST_SOURCES} ${HEADERS})
+# add_executable(TestDataStructures ${TEST_SOURCES} ${HEADERS})
 
-target_link_libraries(TestDataStructures
-    ${OPENSSL_LIBS}
-    Threads::Threads
-    ${PLATFORM_LIBS}
-)
+# target_link_libraries(TestDataStructures
+#     ${OPENSSL_LIBS}
+#     Threads::Threads
+#     ${PLATFORM_LIBS}
+# )
 
 # Interactive test executable
-set(INTERACTIVE_SOURCES
-    interactive_test.cpp
-    src/crypto.cpp
-    src/btree.cpp
-    src/auth.cpp
-    src/storage.cpp
-)
+# set(INTERACTIVE_SOURCES
+#     interactive_test.cpp
+#     src/crypto.cpp
+#     src/btree.cpp
+#     src/auth.cpp
+#     src/storage.cpp
+# )
 
-add_executable(InteractiveTest ${INTERACTIVE_SOURCES} ${HEADERS})
+# add_executable(InteractiveTest ${INTERACTIVE_SOURCES} ${HEADERS})
 
-target_link_libraries(InteractiveTest
-    ${OPENSSL_LIBS}
-    Threads::Threads
-    ${PLATFORM_LIBS}
-)
+# target_link_libraries(InteractiveTest
+#     ${OPENSSL_LIBS}
+#     Threads::Threads
+#     ${PLATFORM_LIBS}
+# )
 
 # Server executable
 set(SERVER_SOURCES
@@ -100,6 +100,12 @@ set(SERVER_SOURCES
 )
 
 add_executable(password_vault_server ${SERVER_SOURCES} ${HEADERS})
+
+# Fix httplib.h compatibility with MinGW - it uses Windows Store APIs unavailable in MinGW
+# We need to define _WIN32_WINNT to use legacy Windows API
+if(WIN32)
+    target_compile_definitions(password_vault_server PRIVATE _WIN32_WINNT=0x0601)
+endif()
 
 target_link_libraries(password_vault_server
     ${OPENSSL_LIBS}

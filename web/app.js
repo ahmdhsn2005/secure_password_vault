@@ -13,24 +13,148 @@ let allPasswords = [];
 document.addEventListener('DOMContentLoaded', () => {
     setupAuthForms();
     checkSession();
+    setupPasswordStrengthChecker();
 });
+
+// Password strength checker
+function checkPasswordStrength(password) {
+    let strength = 0;
+    const feedback = [];
+    
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+    
+    let level, color, width, text;
+    if (strength < 3) {
+        level = 'weak';
+        color = '#ef4444';
+        width = '25%';
+        text = 'Weak';
+    } else if (strength < 5) {
+        level = 'fair';
+        color = '#f59e0b';
+        width = '50%';
+        text = 'Fair';
+    } else if (strength < 6) {
+        level = 'good';
+        color = '#3b82f6';
+        width = '75%';
+        text = 'Good';
+    } else {
+        level = 'strong';
+        color = '#10b981';
+        width = '100%';
+        text = 'Strong';
+    }
+    
+    return { level, color, width, text };
+}
+
+function setupPasswordStrengthChecker() {
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', (e) => {
+            const password = e.target.value;
+            if (password) {
+                const strength = checkPasswordStrength(password);
+                const fill = document.getElementById('strengthFill');
+                const text = document.getElementById('strengthText');
+                
+                if (fill && text) {
+                    fill.style.width = strength.width;
+                    fill.style.background = strength.color;
+                    text.textContent = strength.text;
+                    text.className = `strength-text strength-${strength.level}`;
+                }
+            } else {
+                const fill = document.getElementById('strengthFill');
+                const text = document.getElementById('strengthText');
+                if (fill && text) {
+                    fill.style.width = '0';
+                    text.textContent = '';
+                }
+            }
+        });
+    }
+}
+
+function generatePassword() {
+    const length = 16;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+    let password = '';
+    
+    // Ensure at least one of each type
+    password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
+    password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)];
+    password += '0123456789'[Math.floor(Math.random() * 10)];
+    password += '!@#$%^&*()_+-='[Math.floor(Math.random() * 14)];
+    
+    // Fill the rest
+    for (let i = password.length; i < length; i++) {
+        password += charset[Math.floor(Math.random() * charset.length)];
+    }
+    
+    // Shuffle
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
+    document.getElementById('password').value = password;
+    document.getElementById('password').type = 'text';
+    document.getElementById('password').dispatchEvent(new Event('input'));
+    
+    setTimeout(() => {
+        document.getElementById('password').type = 'password';
+    }, 2000);
+    
+    showToast('Strong password generated');
+}
+
+function updateStats() {
+    const total = allPasswords.length;
+    let strong = 0;
+    let weak = 0;
+    
+    allPasswords.forEach(pwd => {
+        const strength = checkPasswordStrength(pwd.password);
+        if (strength.level === 'strong' || strength.level === 'good') {
+            strong++;
+        } else {
+            weak++;
+        }
+    });
+    
+    document.getElementById('totalPasswords').textContent = total;
+    document.getElementById('strongPasswords').textContent = strong;
+    document.getElementById('weakPasswords').textContent = weak;
+}
+
+// Page Navigation
+function showLoginPage() {
+    document.getElementById('loginPage').classList.remove('hidden');
+    document.getElementById('registerPage').classList.add('hidden');
+    document.getElementById('vaultSection').classList.add('hidden');
+    document.getElementById('loginForm').reset();
+    document.getElementById('loginMessage').innerHTML = '';
+}
+
+function showRegisterPage() {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('registerPage').classList.remove('hidden');
+    document.getElementById('vaultSection').classList.add('hidden');
+    document.getElementById('registerForm').reset();
+    document.getElementById('registerMessage').innerHTML = '';
+}
 
 // Auth Tab Switching
 function switchAuthTab(tab) {
-    const tabs = document.querySelectorAll('.tab');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    
-    tabs.forEach(t => t.classList.remove('active'));
-    
+    // Deprecated - kept for compatibility
     if (tab === 'login') {
-        tabs[0].classList.add('active');
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
+        showLoginPage();
     } else {
-        tabs[1].classList.add('active');
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
+        showRegisterPage();
     }
 }
 
@@ -128,10 +252,12 @@ async function handleRegister(e) {
 
 // Show Vault
 function showVault() {
-    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('registerPage').classList.add('hidden');
     document.getElementById('vaultSection').classList.remove('hidden');
     document.getElementById('usernameDisplay').textContent = currentSession.username;
     loadPasswords();
+    setupPasswordStrengthChecker();
 }
 
 // Logout
@@ -165,6 +291,7 @@ async function loadPasswords() {
         
         if (data.success) {
             allPasswords = data.passwords || [];
+            updateStats();
             renderPasswords(allPasswords);
         } else {
             showToast('Failed to load passwords');
@@ -188,7 +315,9 @@ function renderPasswords(passwords) {
     
     emptyState.classList.add('hidden');
     
-    container.innerHTML = passwords.map(pwd => `
+    container.innerHTML = passwords.map(pwd => {
+        const strength = checkPasswordStrength(pwd.password);
+        return `
         <div class="password-card">
             <div class="password-header">
                 <div class="password-site">${escapeHtml(pwd.site)}</div>
@@ -196,7 +325,11 @@ function renderPasswords(passwords) {
             </div>
             <div class="password-info">
                 <div class="password-field"><strong>Username:</strong> ${escapeHtml(pwd.username)}</div>
-                <div class="password-field"><strong>Password:</strong> <span id="pwd-${pwd.id}">••••••••</span></div>
+                <div class="password-field">
+                    <strong>Password:</strong> 
+                    <span id="pwd-${pwd.id}">••••••••</span>
+                    <span class="strength-text strength-${strength.level}" style="margin-left: 8px;">${strength.text}</span>
+                </div>
                 ${pwd.notes ? `<div class="password-field"><strong>Notes:</strong> ${escapeHtml(pwd.notes)}</div>` : ''}
             </div>
             <div class="password-actions">
@@ -206,7 +339,8 @@ function renderPasswords(passwords) {
                 <button class="icon-btn" onclick='deletePassword("${pwd.id}", "${escapeHtml(pwd.site)}")'>Delete</button>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Search Passwords
@@ -256,6 +390,7 @@ function openAddPasswordModal() {
     document.getElementById('passwordForm').reset();
     document.getElementById('editPasswordId').value = '';
     document.getElementById('passwordModal').classList.remove('hidden');
+    setupPasswordStrengthChecker();
 }
 
 // Edit Password
@@ -268,6 +403,8 @@ function editPassword(pwd) {
     document.getElementById('category').value = pwd.category || '';
     document.getElementById('notes').value = pwd.notes || '';
     document.getElementById('passwordModal').classList.remove('hidden');
+    setupPasswordStrengthChecker();
+    document.getElementById('password').dispatchEvent(new Event('input'));
 }
 
 // Close Password Modal
@@ -367,4 +504,14 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Logout
+function logout() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('sessionToken');
+    currentSession.username = null;
+    currentSession.sessionToken = null;
+    allPasswords = [];
+    showLoginPage();
 }
